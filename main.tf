@@ -16,7 +16,7 @@ data "aws_ami" "app_ami" {
 
 # set up a security group for our EC2 instance
 # 1. set up a vpc, which is the network infra provided by Amazon
-data "aws_vps" "default" {
+data "aws_vpc" "default" {
   default = true
 }
 
@@ -37,7 +37,7 @@ resource "aws_security_group" "blog" {
   description = "Allow http and https in. Allow everything out"
 
   # The vpc we set up above
-  voc_id = data.aws_vpc.default.id
+  vpc_id = data.aws_vpc.default.id
 }
 
 resource "aws_security_group_rule" "blog_http_in" {
