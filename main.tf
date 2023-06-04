@@ -23,11 +23,10 @@ data "aws_vpc" "default" {
 resource "aws_instance" "blog" {
   ami           = data.aws_ami.app_ami.id
   instance_type = var.instance_type
-
-  vpc_security_group_ids = ["aws_security_group.blog.id"]
+  vpc_security_group_ids = [aws_security_group.blog.id]
 
   tags = {
-    Name = "HelloWorld"
+    Name = "LearningTerraform"
   }
 }
 
@@ -60,7 +59,7 @@ resource "aws_security_group_rule" "blog_https_in" {
   security_group_id = aws_security_group.blog.id
 }
 
-resource "aws_security_group_rule" "blog_everythin_out" {
+resource "aws_security_group_rule" "blog_everything_out" {
   type        = "egress"  # this is because we are setting up inbound rules
   from_port   = 00        # allow everything outbound
   to_port     = 00
