@@ -23,11 +23,28 @@ data "aws_vpc" "default" {
 resource "aws_instance" "blog" {
   ami           = data.aws_ami.app_ami.id
   instance_type = var.instance_type
-  vpc_security_group_ids = [aws_security_group.blog.id]
+
+  # look for the output of this module in the documentation outputs section
+  vpc_security_group_ids = [module.blog_sg.security_group_id]
 
   tags = {
     Name = "LearningTerraform"
   }
+}
+
+module "blog_sg" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "5.0.0"
+  name    = "blog_new"
+
+  # The vpc we set up above
+  vpc_id = data.aws_vpc.default.id
+
+  ingress_rules       = ["http-80-tcp", "https-443-tcp"]
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+
+  egress_rules = ["all-all"]
+  egress_cidr_blocks = ["0.0.0.0/0"]
 }
 
 # 2. set up a security group, which is a firewall for EC2 instances
