@@ -49,7 +49,7 @@ data "aws_vpc" "default" {
 # }
 
 # this will late replace the above aws_instance resource and autoscale the EC2 instances
-module "autoscaling" {
+module "blog_autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
   version = "6.10.0"
   
@@ -103,17 +103,17 @@ module "blog_alb" {
   ]
 
   tags = {
-    Environment = "Dev"
+    Environment = "dev"
   }
 }
 
 module "blog_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.0.0"
-  name    = "blog_new"
+  name    = "blog"
 
   # The vpc we set up above
-  vpc_id = module.blog_vpc.public_subnets[0] # just use the first public subnet
+  vpc_id = module.blog_vpc.vpc_id
 
   ingress_rules       = ["http-80-tcp", "https-443-tcp"]
   ingress_cidr_blocks = ["0.0.0.0/0"]
@@ -121,6 +121,10 @@ module "blog_sg" {
   egress_rules = ["all-all"]
   egress_cidr_blocks = ["0.0.0.0/0"]
 }
+
+
+
+
 
 
 
