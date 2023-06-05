@@ -15,7 +15,7 @@ data "aws_ami" "app_ami" {
 }
 
 # use the vpc module from the terraform registry instead of writing our own
-module "vpc" {
+module "blog_vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
   name = "dev"
@@ -48,6 +48,47 @@ resource "aws_instance" "blog" {
   }
 }
 
+# Application Load Balancer
+module "alb" {
+  source  = "terraform-aws-modules/alb/aws"
+  version = "~> 8.0"
+
+  name = "blog-alb"
+
+  load_balancer_type = "application"
+
+  vpc_id             = module.blog_vpc.vpc_id
+  subnets            = module.blog_vpc.public_subnets
+  security_groups    = module.blog_sg.security_group_id
+
+  target_groups = [
+    {
+      name_prefix      = "blog-"
+      backend_protocol = "HTTP"
+      backend_port     = 80
+      target_type      = "instance"
+      targets = {
+        my_target = {
+          target_id = aws_instance.blog.id  # this tells load balancer to send traffic to this instance
+          port = 80
+        }
+      }
+    }
+  ]
+
+  http_tcp_listeners = [
+    {
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+    }
+  ]
+
+  tags = {
+    Environment = "Dev"
+  }
+}
+
 module "blog_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.0.0"
@@ -63,6 +104,10 @@ module "blog_sg" {
   egress_cidr_blocks = ["0.0.0.0/0"]
 }
 
+
+
+
+# Deprecated below
 # 2. set up a security group, which is a firewall for EC2 instances
 resource "aws_security_group" "blog" {
   name        = "blog"
