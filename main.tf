@@ -95,7 +95,7 @@ module "blog_sg" {
   name    = "blog_new"
 
   # The vpc we set up above
-  vpc_id = module.vpc.public_subnets[0] # just use the first public subnet
+  vpc_id = module.blog_vpc.public_subnets[0] # just use the first public subnet
 
   ingress_rules       = ["http-80-tcp", "https-443-tcp"]
   ingress_cidr_blocks = ["0.0.0.0/0"]
