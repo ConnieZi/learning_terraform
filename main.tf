@@ -21,7 +21,7 @@ module "blog_vpc" {
   name = "dev"
   cidr = "10.0.0.0/16"
 
-  azs             = ["us-west-2a", "us-west-2b", "eu-west-1c"]
+  azs             = ["us-east-2a", "us-east-2b", "us-east-2c"]
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
   tags = {
@@ -84,12 +84,13 @@ module "blog_alb" {
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "instance"
-      targets = {
-        my_target = {
-          target_id = aws_instance.blog.id  # this tells load balancer to send traffic to this instance
-          port = 80
-        }
-      }
+      # NOTE: no more targets here as we specify them in autoscaling module
+      # targets = {
+      #   my_target = {
+      #     target_id = aws_instance.blog.id  # this tells load balancer to send traffic to this instance
+      #     port = 80
+      #   }
+      # }
     }
   ]
 
