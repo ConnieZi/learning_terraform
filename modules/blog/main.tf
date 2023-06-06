@@ -24,7 +24,7 @@ module "blog_vpc" {
   azs             = ["us-west-2a", "us-west-2b", "us-west-2c"]
   public_subnets  = ["${var.environment.network_prefix}.101.0/24", "${var.environment.network_prefix}.102.0/24", "${var.environment.network_prefix}.103.0/24"]
 
-  enable_nat_gateway = true
+  # enable_nat_gateway = true
 
   tags = {
     Terraform = "true"
@@ -57,14 +57,13 @@ module "blog_autoscaling" {
   
   name     = "${var.environment.name}-blog"
 
-  min_size = var.asg_min_size
-  max_size = var.asg_max_size
+  min_size            = var.asg_min_size
+  max_size            = var.asg_max_size
   vpc_zone_identifier = module.blog_vpc.public_subnets
   target_group_arns   =  module.blog_alb.target_group_arns  # target group is created by the load balancer, it's what the traffic is targeted to
-  
-  security_groups = [module.blog_sg.security_group_id]
-  instance_type   = var.instance_type
-  image_id        = data.aws_ami.app_ami.id
+  security_groups     = [module.blog_sg.security_group_id]
+  instance_type       = var.instance_type
+  image_id            = data.aws_ami.app_ami.id
   
 }
 
@@ -73,7 +72,7 @@ module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 8.0"
 
-  name = "${var.environment.name}-alb"
+  name = "${var.environment.name}-blog-alb"
 
   load_balancer_type = "application"
 
